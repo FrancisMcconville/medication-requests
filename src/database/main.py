@@ -1,6 +1,5 @@
 import logging
 import sys
-from contextlib import contextmanager
 from os import environ
 
 from sqlalchemy import create_engine
@@ -29,10 +28,6 @@ except:  # noqa
     sys.exit(1)
 
 
-@contextmanager
-def session(**kwargs) -> Session:
-    _session = session_factory(**kwargs)
-    try:
-        yield _session
-    finally:
-        _session.close()
+def get_session(**kwargs) -> Session:
+    with session_factory(**kwargs) as session:
+        yield session
