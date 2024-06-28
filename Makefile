@@ -12,6 +12,10 @@ help:  ## List all goals in makefile with brief documentation.
 	&& pip install wheel \
 	&& pip install -r requirements.txt
 
+.PHONY: start-docker-infra
+start-docker-infra:
+	docker compose up --wait
+
 .PHONY: all
 all:
 	@echo todo
@@ -24,10 +28,15 @@ clean:
 test:
 	@echo todo
 
-
 .PHONY: alembic-revision
 alembic-revision:
-	docker compose up postgres --wait
+	$(MAKE) start-docker-infra
 	set -a && . .env.dev && \
 	alembic upgrade head && \
 	alembic revision --autogenerate
+
+.PHONY: alembic-migrate
+alembic-migrate:
+	$(MAKE) start-docker-infra
+	set -a && . .env.dev && \
+	alembic upgrade head
