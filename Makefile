@@ -23,3 +23,11 @@ clean:
 .PHONY: test
 test:
 	@echo todo
+
+
+.PHONY: alembic-revision
+alembic-revision:
+	docker compose up postgres --wait
+	set -a && . .env.dev && \
+	alembic upgrade head && \
+	alembic revision --autogenerate
