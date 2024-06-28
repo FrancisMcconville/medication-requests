@@ -16,6 +16,12 @@ help:  ## List all goals in makefile with brief documentation.
 start-docker-infra:
 	docker compose up --wait
 
+.PHONY: run
+run: .venv
+	$(MAKE) start-docker-infra
+	set -a && . .env.dev && \
+	uvicorn src.main:app --reload
+
 .PHONY: all
 all:
 	@echo todo
