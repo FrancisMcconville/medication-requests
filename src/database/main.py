@@ -28,6 +28,6 @@ except:  # noqa
     sys.exit(1)
 
 
-def get_session(**kwargs) -> Session:
-    with session_factory(**kwargs) as session:
+def get_session() -> Session:
+    with session_factory() as session:
         yield session
