@@ -2,13 +2,13 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from src.enums import MedicationRequestStatus
+from src.enums import MedicationForm, MedicationRequestStatus, Sex
 
 
-class MedicationRequest(BaseModel):
-    patient: "Patient"
-    clinician: "Clinician"
-    medication: "Medication"
+class MedicationRequestCreate(BaseModel):
+    patient: "PatientCreate"
+    clinician: "ClinicianCreate"
+    medication: "MedicationCreate"
     reason: str
     prescribed_date: date
     start_date: date
@@ -34,13 +34,27 @@ class MedicationRequestPatch(BaseModel):
     status: MedicationRequestStatus | None
 
 
-class Clinician(BaseModel):
-    reference: str
+class ClinicianCreate(BaseModel):
+    first_name: str
+    last_name: str
+    registration_id: str
 
 
-class Medication(BaseModel):
-    reference: str
+class MedicationCreate(BaseModel):
+    code: str
+    code_name: str
+    code_system: str
+    strength_value: int
+    strength_unit: str
+    form: MedicationForm
 
 
-class Patient(BaseModel):
-    reference: str
+class PatientCreate(BaseModel):
+    first_name: str
+    last_name: str
+    date_of_birth: date
+    sex: Sex
+
+
+class MedicationRequestCreationResult(BaseModel):
+    id: int
