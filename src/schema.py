@@ -17,16 +17,6 @@ class MedicationRequestCreate(BaseModel):
     status: MedicationRequestStatus
 
 
-class DateRange(BaseModel):
-    start: date
-    end: date
-
-
-class MedicationRequestFilter(BaseModel):
-    status: MedicationRequestStatus | None
-    date_range: DateRange | None
-
-
 class MedicationRequestPatch(BaseModel):
     medication_request_reference: str
     end_date: date | None
@@ -58,3 +48,26 @@ class PatientCreate(BaseModel):
 
 class MedicationRequestCreationResult(BaseModel):
     id: int
+
+
+class ClinicianDetails(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+
+
+class MedicationDetails(BaseModel):
+    id: int
+    code_name: str
+
+
+class MedicationRequestDetails(BaseModel):
+    id: int
+    reason_text: str
+    prescribed_date: date
+    start_date: date
+    end_date: date | None
+    frequency_per_day: int
+    status: MedicationRequestStatus
+    clinician: ClinicianDetails
+    medication: MedicationDetails
