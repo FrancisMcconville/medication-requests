@@ -10,11 +10,15 @@ help:  ## List all goals in makefile with brief documentation.
 	python3 -m venv .venv \
 	&& . .venv/bin/activate \
 	&& pip install wheel \
-	&& pip install -r requirements.txt
+	&& pip install -r requirements.txt -r requirements_test.txt -r requirements_dev.txt
 
 .PHONY: start-docker-infra
 start-docker-infra:
 	docker compose up --wait
+
+.PHONY: start-docker-test-infra
+start-docker-test-infra:
+	docker compose -f docker-compose-test.yml up --wait
 
 .PHONY: run
 run: .venv
@@ -31,8 +35,11 @@ clean:
 	@echo todo
 
 .PHONY: test
-test:
-	@echo todo
+test: .venv ## Run Pytest with Postgress test DB in Docker
+	$(MAKE) start-docker-test-infra
+	. .venv/bin/activate && \
+	set -a && . ./.env.test \
+ 	&& pytest tests
 
 .PHONY: alembic-revision
 alembic-revision:
