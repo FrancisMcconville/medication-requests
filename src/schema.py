@@ -1,8 +1,17 @@
 from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import AfterValidator, BaseModel, Field
+from typing_extensions import Annotated
 
 from src.enums import MedicationForm, MedicationRequestStatus, Sex
+
+
+def check_integer_positive(v: int) -> int:
+    assert v > 0, f"{v} is not a positive integer"
+    return v
+
+
+PositiveInt = Annotated[int, AfterValidator(check_integer_positive)]
 
 
 class MedicationRequestCreate(BaseModel):
@@ -12,8 +21,8 @@ class MedicationRequestCreate(BaseModel):
     reason: str
     prescribed_date: date
     start_date: date
-    end_date: date | None
-    frequency_per_day: int
+    end_date: date | None = None
+    frequency_per_day: PositiveInt
     status: MedicationRequestStatus
 
 
@@ -66,7 +75,7 @@ class MedicationRequestDetails(BaseModel):
     reason_text: str
     prescribed_date: date
     start_date: date
-    end_date: date | None
+    end_date: date | None = None
     frequency_per_day: int
     status: MedicationRequestStatus
     clinician: ClinicianDetails
@@ -78,5 +87,5 @@ class MedicationRequestUpdate(BaseModel):
     end_date: date | None = Field(
         default=None, title="Set this to 1970-01-01 to unset the end_date"
     )
-    frequency: int | None = None
+    frequency: PositiveInt | None = None
     status: MedicationRequestStatus | None = None

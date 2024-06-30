@@ -1,5 +1,6 @@
 from datetime import date
 
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 
 from src.database.models import Clinician, Medication, MedicationRequest, Patient
@@ -117,13 +118,27 @@ def _medication_request_to_details(medication_request) -> MedicationRequestDetai
 def medication_request_update(
     session: Session, update: MedicationRequestUpdate
 ) -> MedicationRequestDetails:
-    medication_request_record = session.query(MedicationRequest).get(update.id)
-
+    medication_request_record: MedicationRequest | None = session.get(
+        MedicationRequest, update.id
+    )
+    if medication_request_record is None:
+        raise HTTPException(
+            status_code=404, detail=f"No MedicationRecord found with id {update.id}"
+        )
     if update.end_date is not None:
-        medication_request_record.end_date = update.end_date
+        if update.end_date == date(1970, 1, 1):
+            medication_request_record.end_date = None
+        elif update.end_date < medication_request_record.start_date:
+            raise HTTPException(
+                status_code=422,
+                detail=f"End date {update.end_date.isoformat()} "
+                f"is before this MedicationRequests start date",
+            )
+        else:
+            medication_request_record.end_date = update.end_date
 
     if update.frequency is not None:
-        medication_request_record.frequency = update.frequency
+        medication_request_record.frequency_per_day = update.frequency
 
     if update.status is not None:
         medication_request_record.status = update.status
