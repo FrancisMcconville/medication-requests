@@ -29,6 +29,7 @@ start-docker-test-infra:  ## Start infra needed for testing using docker
 .PHONY: run
 run: .venv  ## Run the application locally
 	$(MAKE) start-docker-infra
+	. .venv/bin/activate && \
 	set -a && . .env.dev && \
 	uvicorn src.main:app --reload
 
@@ -53,14 +54,16 @@ test: .venv ## Run Pytest
  	&& pytest tests
 
 .PHONY: alembic-revision
-alembic-revision:  ## Autogenerate a new alembic migration
+alembic-revision: .venv ## Autogenerate a new alembic migration
 	$(MAKE) start-docker-infra
+	. .venv/bin/activate && \
 	set -a && . .env.dev && \
 	alembic upgrade head && \
 	alembic revision --autogenerate
 
 .PHONY: alembic-migrate
-alembic-migrate:  ## Apply alembic migrations up to head
+alembic-migrate: .venv ## Apply alembic migrations up to head
 	$(MAKE) start-docker-infra
+	. .venv/bin/activate && \
 	set -a && . .env.dev && \
 	alembic upgrade head
