@@ -1,6 +1,31 @@
 version: "3.9"
 
+secrets:
+  pip.conf:
+    file: "$HOME/.config/pip/pip.conf"
+
 services:
+  api:
+    build:
+      dockerfile: ./Dockerfile
+      secrets:
+        - pip.conf
+    image: tech-test-fmc:latest
+    ports:
+      - 8130:8130
+    container_name: tech-test-fmc
+    env_file:
+      - .env.docker
+    entrypoint: ["uvicorn"]
+    command: ["src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8130"]
+    volumes:
+      - ./src/:/service/src/
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - api
+
   postgres:
     image: postgres:15
     ports:
