@@ -3,13 +3,18 @@ from datetime import date
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.crud import medication_request_create, medication_request_filter
+from src.crud import (
+    medication_request_create,
+    medication_request_filter,
+    medication_request_update,
+)
 from src.database.main import get_session
 from src.enums import MedicationRequestStatus
 from src.schema import (
     MedicationRequestCreate,
     MedicationRequestCreationResult,
     MedicationRequestDetails,
+    MedicationRequestUpdate,
 )
 
 router = APIRouter(prefix="/v1")
@@ -34,9 +39,8 @@ async def get_medication_request(
     )
 
 
-#
-# @router.patch("/medication_request", tags=["MedicationRequest"])
-# async def patch_medication_request(
-#     *, patch_request: MedicationRequestPatch, session: Session = Depends(get_session)
-# ) -> MedicationRequest:
-#     return JSONResponse({"status": "todo"})
+@router.patch("/medication_request", tags=["MedicationRequest"])
+async def patch_medication_request(
+    update_request: MedicationRequestUpdate, session: Session = Depends(get_session)
+) -> MedicationRequestDetails:
+    return medication_request_update(session=session, update=update_request)

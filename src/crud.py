@@ -12,6 +12,7 @@ from src.schema import (
     MedicationRequestCreate,
     MedicationRequestCreationResult,
     MedicationRequestDetails,
+    MedicationRequestUpdate,
     PatientCreate,
 )
 
@@ -88,24 +89,45 @@ def medication_request_filter(
 
     result = []
     for medication_request in queryset.all():
-        result.append(
-            MedicationRequestDetails(
-                id=medication_request.id,
-                reason_text=medication_request.reason_text,
-                prescribed_date=medication_request.prescribed_date,
-                start_date=medication_request.start_date,
-                end_date=medication_request.end_date,
-                frequency_per_day=medication_request.frequency_per_day,
-                status=medication_request.status,
-                clinician=ClinicianDetails(
-                    id=medication_request.clinician.id,
-                    first_name=medication_request.clinician.first_name,
-                    last_name=medication_request.clinician.last_name,
-                ),
-                medication=MedicationDetails(
-                    id=medication_request.medication.id,
-                    code_name=medication_request.medication.code_name,
-                ),
-            )
-        )
+        result.append(_medication_request_to_details(medication_request))
     return result
+
+
+def _medication_request_to_details(medication_request) -> MedicationRequestDetails:
+    return MedicationRequestDetails(
+        id=medication_request.id,
+        reason_text=medication_request.reason_text,
+        prescribed_date=medication_request.prescribed_date,
+        start_date=medication_request.start_date,
+        end_date=medication_request.end_date,
+        frequency_per_day=medication_request.frequency_per_day,
+        status=medication_request.status,
+        clinician=ClinicianDetails(
+            id=medication_request.clinician.id,
+            first_name=medication_request.clinician.first_name,
+            last_name=medication_request.clinician.last_name,
+        ),
+        medication=MedicationDetails(
+            id=medication_request.medication.id,
+            code_name=medication_request.medication.code_name,
+        ),
+    )
+
+
+def medication_request_update(
+    session: Session, update: MedicationRequestUpdate
+) -> MedicationRequestDetails:
+    medication_request_record = session.query(MedicationRequest).get(update.id)
+
+    if update.end_date is not None:
+        medication_request_record.end_date = update.end_date
+
+    if update.frequency is not None:
+        medication_request_record.frequency = update.frequency
+
+    if update.status is not None:
+        medication_request_record.status = update.status
+
+    session.commit()
+
+    return _medication_request_to_details(medication_request_record)

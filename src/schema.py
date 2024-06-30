@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.enums import MedicationForm, MedicationRequestStatus, Sex
 
@@ -71,3 +71,12 @@ class MedicationRequestDetails(BaseModel):
     status: MedicationRequestStatus
     clinician: ClinicianDetails
     medication: MedicationDetails
+
+
+class MedicationRequestUpdate(BaseModel):
+    id: int
+    end_date: date | None = Field(
+        default=None, title="Set this to 1970-01-01 to unset the end_date"
+    )
+    frequency: int | None = None
+    status: MedicationRequestStatus | None = None
