@@ -1,15 +1,10 @@
 version: "3.9"
 
-secrets:
-  pip.conf:
-    file: "$HOME/.config/pip/pip.conf"
 
 services:
   api:
     build:
       dockerfile: ./Dockerfile
-      secrets:
-        - pip.conf
     image: tech-test-fmc:latest
     ports:
       - 8130:8130

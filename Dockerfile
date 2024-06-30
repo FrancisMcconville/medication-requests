@@ -9,8 +9,7 @@ WORKDIR /service
 
 COPY requirements.txt .
 
-RUN --mount=type=secret,id=pip.conf,dst=$PIP_CONF_PATH \
-    pip install --no-cache-dir --upgrade pip \
+RUN pip install --no-cache-dir --upgrade pip \
     && pip install virtualenv \
     && python3 -m virtualenv .venv \
     && . .venv/bin/activate \
