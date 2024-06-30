@@ -6,7 +6,13 @@ help:  ## List all goals in makefile with brief documentation.
 	@echo "Available commands:"
 	@sed -nr 's/(.*?):[^#]*##(.*)/    \1|\2/p' $(MAKEFILE_LIST) | column -s\| -t
 
-.venv setup:  ## Setup Python venv.
+
+.PHONY: setup
+setup:
+	$(MAKE) .venv
+	$(MAKE) alembic-migrate
+
+.venv:  ## Setup Python venv.
 	python3 -m venv .venv \
 	&& . .venv/bin/activate \
 	&& pip install wheel \
