@@ -29,7 +29,7 @@ To run in docker run `make run-docker` - then visit http://localhost:8130/docs
 ### Contributing
 
 This repo uses pre-commit for linting -
-you should run `precommit install` before contributing
+you should run `pre-commit install` before contributing
 
 ### Assumptions
 
